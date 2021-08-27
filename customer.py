@@ -52,12 +52,9 @@ class Customer:
         
     # customer detailed information
     def displayCustomerDetails(self):
-        videoTitles = self.getAllVideoTitles()
-        return f'Customer Name: {self.__name} \nCity: {self.__city} \n\n{videoTitles} \n\nTotal Payment: ${self.__payment}'
-
-    def getAllVideoTitles(self):
         videoTitles = []
         for video in self.__videoList:
             videoTitles.append(video.Title)
-        return '\n'.join(videoTitles)
+        videos = '\n'.join(videoTitles)
+        return f'Customer Name: {self.__name} \nCity: {self.__city} \n\n{videos} \n\nTotal Payment: ${self.__payment}'
        

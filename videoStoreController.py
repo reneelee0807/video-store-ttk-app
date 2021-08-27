@@ -8,12 +8,13 @@ class VideoStoreController:
 
     # add new video into the video list
     def addVideoIntoVideoList(self,title, year, status):
-        aVideo = Video(title, year, status)
+        formatedStatus = True if status.strip() == 'true' else False
+        aVideo = Video(title.strip(), year.strip(), formatedStatus)
         self.allVideos.append(aVideo)
 
     # add new customer into the customer list
     def addCustomerIntoCustomerList(self, name, city, payment):
-        aCustomer = Customer(name, city, float(payment))
+        aCustomer = Customer(name.strip(), city.strip(), float(payment))
         self.allCustomers.append(aCustomer)
 
 
@@ -21,9 +22,11 @@ class VideoStoreController:
     def rentVideo(self, aCustName, aVideoTitle):
         foundCustomer = self.findCustomer(aCustName)
         foundVideo = self.findVideo(aVideoTitle)
+        print(foundVideo.Status)
         if foundVideo.Status:
             foundVideo.Status = False
             foundCustomer.addRental(foundVideo)
+            foundCustomer.updatePayment()
             return True
         else:
             return False
@@ -31,16 +34,13 @@ class VideoStoreController:
     #return a video
     def returnVideo(self, aCustName, aVideoTitle):
         foundCustomer = self.findCustomer(aCustName)
-        
         for video in foundCustomer.VideoList:
             if video.Title == aVideoTitle:
                 foundVideo = self.findVideo(aVideoTitle)
                 foundVideo.Status = True
-                foundCustomer.removeVideo(foundVideo)
-                foundCustomer.updatePayment()
+                foundCustomer.removeVideo(foundVideo)               
                 return True
-        return False
-            
+        return False        
     
     #find a video based on a title, returns video object or None
     def findVideo(self, aTitle) -> Video:
@@ -58,68 +58,12 @@ class VideoStoreController:
 
     def getCustomerDetail(self, aName):
         foundCustomer = self.findCustomer(aName)
-        return foundCustomer.displayCustomerDetails()
+        if foundCustomer:
+            return foundCustomer.displayCustomerDetails()
+        return None
 
     def getVideoDetail(self, aVideoTitle):
         foundVideo = self.findVideo(aVideoTitle)
-        return foundVideo.displayVideoDetails()
-
-
-
-
-
-    # # display all movies' details
-    # def displayAllMoviesDetails(self) -> str:
-    #     pass
-
-    # # search movie by name
-    # def searchMovie(self, mName) -> Movie:
-    #     pass
-
-    # # use 'searchMovie' function to find a movie then display a movie details
-    # def displayAMovieDetails(self, mName) -> str:
-    #     pass
-
-    # # use 'searchMovie' function to find a movie then set movie is rented by setting isRented to true
-    # def setMovieIsRented(self, mName):
-    #     pass
-
-    # # use 'searchMovie' function to find a movie then set movie is return by setting isRented to false
-    # def setMovieIsReturned(self, mName):
-    #     pass
-
-
-
-    # """
-    #     functions to create and maintain the Customer objects
-    # """
-
-    # # display all customers' details
-    # def displayAllCustomerDetails(self) -> str:
-    #     pass
-
-    # # search customer by customer email as customer email is unique
-    # def searchCustomer(self, cEmail) -> Customer:
-    #     pass
-
-    # # use 'searchCustomer' function to find customer then display a customer details
-    # def displayACustomerDetails(self, cEmail) -> str:
-    #     pass
-
-
-
-    # # use 'searchCustomer' function to find customer then add a movie to the rental list to store the movie that customer is rented
-    # def addRental(self, cEmail, aMovie):
-    #     pass
-
-    # # use 'searchCustomer' function to find customer then delete movie from the rental List when movie is return
-    # def deleteRental(self, cEmail, aMovie):
-    #     pass
-
-    # # generate a payment object by movies that customer is going to pay for
-    # def generatePayment(self, movies) ->Payment:
-    #     pass
-
-    # # use 'searchCustomer' function to find customer then add the payment into the customer rental payment record list
-    # def addRentalPaymentRecordForACustomer(self, cEmail, aPayment):
-    #     pass
+        if foundVideo:
+            return foundVideo.displayVideoDetails()
+        return None

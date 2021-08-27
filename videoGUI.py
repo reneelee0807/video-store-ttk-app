@@ -10,7 +10,6 @@ videoStore = VideoStoreController()
 def readCustomerData():     
     file = open("Customer.txt", "r")
     lines = file.readlines()
-
     for index, line in enumerate(lines):
         (name, city, payment) = tuple(line.strip().split(','))
         videoStore.addCustomerIntoCustomerList(name, city, payment)
@@ -20,7 +19,6 @@ def readCustomerData():
 def readVideoData():     
     file = open("Video.txt", "r")
     lines = file.readlines()
-
     for index, line in enumerate(lines):
         (title, year, status) = tuple(line.strip().split(','))
         videoStore.addVideoIntoVideoList(title, year, status)
@@ -48,7 +46,9 @@ def rentVideo():
     if selectedCustomerName and selectedVideoTitle:
         videoIsRented = videoStore.rentVideo(selectedCustomerName, selectedVideoTitle)
         if videoIsRented:
-            showMessage(f'{selectedCustomerName} successfully rent {selectedVideoTitle}')
+            showMessage(f'{selectedCustomerName} successfully rent {selectedVideoTitle}. Rental Fee $10 is paid')
+            updateCustomerDetailTextBox()
+            updateVideoDetailTextBox()
         else:
             showMessage(f'Sorry, {selectedVideoTitle} has been rented by someone else.')
     else:
@@ -60,7 +60,9 @@ def returnVideo():
     if selectedCustomerName and selectedVideoTitle:
         videoIsReturned = videoStore.returnVideo(selectedCustomerName, selectedVideoTitle)
         if videoIsReturned:
-            showMessage(f'{selectedCustomerName} successfully return {selectedVideoTitle}. Rental Fee $10 is paid')
+            showMessage(f'{selectedCustomerName} successfully return {selectedVideoTitle}.')
+            updateCustomerDetailTextBox()
+            updateVideoDetailTextBox()
         else:
             showMessage(f'Sorry, {selectedVideoTitle} was not rented by {selectedCustomerName}')
     else:
@@ -68,21 +70,25 @@ def returnVideo():
 
 def showCustomerDetail():
     text_customerDetail.delete(1.0,tk.END)
-    selectedCustomerName = getSelectedCustomerName()
-    
+    selectedCustomerName = getSelectedCustomerName()  
     if selectedCustomerName:
         detail = videoStore.getCustomerDetail(selectedCustomerName)
-        print(detail)
         text_customerDetail.insert(tk.END, detail)
 
 def showVideoDetail():
     text_videoDetail.delete(1.0,tk.END)
     selectedVideoTitle = getSelectedVideoTitle()
-    
     if selectedVideoTitle:
         detail = videoStore.getVideoDetail(selectedVideoTitle)
-        print(detail)
         text_videoDetail.insert(tk.END, detail)
+
+def updateCustomerDetailTextBox():
+    if len(text_customerDetail.get("1.0", tk.END))>=1:
+        showCustomerDetail()
+
+def updateVideoDetailTextBox():
+    if len(text_customerDetail.get("1.0", tk.END))>=1:
+        showVideoDetail()
 
 def showMessage(message):
     tk.messagebox.showinfo("Info", message)
