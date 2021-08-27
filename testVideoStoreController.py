@@ -75,15 +75,15 @@ class TestVideoStoreController(unittest.TestCase):
         videoStore = VideoStoreController()
         videoStore.addVideoIntoVideoList('The Avengers', '2012', 'true')
         detail = videoStore.getVideoDetail('The Avengers')
+
         self.assertEquals(detail, 'The Avengers 2012 Available')
 
     def testGetCustomerDetailWhenCustomerIsNotInTheList(self):
         videoStore = VideoStoreController()
         videoStore.addVideoIntoVideoList('The Avengers', '2012', 'true')
         detail = videoStore.getVideoDetail('Forrest Gump')
+        
         self.assertEquals(detail, None)
-
-
 
 
 if __name__ == '__main__':

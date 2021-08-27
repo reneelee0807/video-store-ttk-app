@@ -7,6 +7,7 @@ from videoStoreController import VideoStoreController
 
 videoStore = VideoStoreController()
 
+#  read customer data from the file and insert them into the list box
 def readCustomerData():     
     file = open("Customer.txt", "r")
     lines = file.readlines()
@@ -16,6 +17,7 @@ def readCustomerData():
         lstbox_customers.insert(tk.END, name)
     file.close()
 
+#  read video data from the file and insert them into the list box
 def readVideoData():     
     file = open("Video.txt", "r")
     lines = file.readlines()
@@ -25,49 +27,46 @@ def readVideoData():
         lstbox_videos.insert(tk.END, title)
     file.close()
 
+# get selected customer name if it is available otherwise display a warning
 def getSelectedCustomerName():
     selCustomerIndex = lstbox_customers.curselection()
     if not selCustomerIndex:
-        showMessage('Please select a customer')
-        return
+        showWarning('Please select a customer')
     else:
         return lstbox_customers.get(selCustomerIndex)
 
+# get selected video name if it is available otherwise display a warning
 def getSelectedVideoTitle():
     selVideoIndex = lstbox_videos.curselection()
     if not selVideoIndex:
-        showMessage('Please select a movie')
-        return
-    return lstbox_videos.get(selVideoIndex)
+        showWarning('Please select a movie')
+    else:
+        return lstbox_videos.get(selVideoIndex)
 
+# handle the video rental if customer and video are selected otherwise display a warning
 def rentVideo():
     selectedCustomerName = getSelectedCustomerName()
     selectedVideoTitle = getSelectedVideoTitle()
     if selectedCustomerName and selectedVideoTitle:
         videoIsRented = videoStore.rentVideo(selectedCustomerName, selectedVideoTitle)
         if videoIsRented:
-            showMessage(f'{selectedCustomerName} successfully rent {selectedVideoTitle}. Rental Fee $10 is paid')
-            updateCustomerDetailTextBox()
-            updateVideoDetailTextBox()
+            showInfo(f'{selectedCustomerName} successfully rent {selectedVideoTitle}. Rental Fee $10 is paid')
         else:
-            showMessage(f'Sorry, {selectedVideoTitle} has been rented by someone else.')
-    else:
-        return
+            showWarning(f'Sorry, {selectedVideoTitle} has been rented by someone else.')
 
+
+# handle the video return if customer and video are selected otherwise display a warning
 def returnVideo():
     selectedCustomerName = getSelectedCustomerName()
     selectedVideoTitle = getSelectedVideoTitle()
     if selectedCustomerName and selectedVideoTitle:
         videoIsReturned = videoStore.returnVideo(selectedCustomerName, selectedVideoTitle)
         if videoIsReturned:
-            showMessage(f'{selectedCustomerName} successfully return {selectedVideoTitle}.')
-            updateCustomerDetailTextBox()
-            updateVideoDetailTextBox()
+            showInfo(f'{selectedCustomerName} successfully return {selectedVideoTitle}.')
         else:
-            showMessage(f'Sorry, {selectedVideoTitle} was not rented by {selectedCustomerName}')
-    else:
-        return
+            showWarning(f'Sorry, {selectedVideoTitle} was not rented by {selectedCustomerName}')
 
+# display selected customer details
 def showCustomerDetail():
     text_customerDetail.delete(1.0,tk.END)
     selectedCustomerName = getSelectedCustomerName()  
@@ -75,6 +74,7 @@ def showCustomerDetail():
         detail = videoStore.getCustomerDetail(selectedCustomerName)
         text_customerDetail.insert(tk.END, detail)
 
+# display selected video details
 def showVideoDetail():
     text_videoDetail.delete(1.0,tk.END)
     selectedVideoTitle = getSelectedVideoTitle()
@@ -82,16 +82,11 @@ def showVideoDetail():
         detail = videoStore.getVideoDetail(selectedVideoTitle)
         text_videoDetail.insert(tk.END, detail)
 
-def updateCustomerDetailTextBox():
-    if len(text_customerDetail.get("1.0", tk.END))>=1:
-        showCustomerDetail()
-
-def updateVideoDetailTextBox():
-    if len(text_customerDetail.get("1.0", tk.END))>=1:
-        showVideoDetail()
-
-def showMessage(message):
+def showInfo(message):
     tk.messagebox.showinfo("Info", message)
+
+def showWarning(message):
+    tk.messagebox.showwarning("Warning", message)
 
 
 # root window
@@ -101,7 +96,7 @@ root.resizable(width=False, height=False)
 root.title('Lincoln Video Rentals')
 
 
-# read customer and video files
+# read customer and video files when the app is run
 root.after_idle(readCustomerData)
 root.after_idle(readVideoData)
 
@@ -133,12 +128,12 @@ frm_videoDetail.pack(padx=25, pady=5)
 
 
 # Customers label for customers list 
-customersSubTotal = tk.Label(master=frm_customerAndVideoLabel,text="Customers")
-customersSubTotal.pack(fill='x', padx=50, pady=0,side=tk.LEFT)
+customersSubTotal = tk.Label(master=frm_customerAndVideoLabel,text="Customer")
+customersSubTotal.pack(fill='x', padx=10, pady=0,side=tk.LEFT)
 
 # Video label for videos list 
-videosSubTotal = tk.Label(master=frm_customerAndVideoLabel, text="Videos")
-videosSubTotal.pack(fill='x', padx=50, pady=0,side=tk.LEFT)
+videosSubTotal = tk.Label(master=frm_customerAndVideoLabel, text="Movie")
+videosSubTotal.pack(fill='x', padx=95, pady=0,side=tk.LEFT)
 
 # customers list 
 lstbox_customers = tk.Listbox(master=frm_customerAndVideoList, exportselection=0, selectmode=tk.BROWSE)
@@ -146,7 +141,7 @@ lstbox_customers.pack(fill='x', padx=20, pady=0,side=tk.LEFT)
 
 # videos list
 lstbox_videos = tk.Listbox(master=frm_customerAndVideoList, exportselection=0, selectmode=tk.BROWSE)
-lstbox_videos.pack(fill='x', padx=20, pady=5,side=tk.LEFT)
+lstbox_videos.pack(fill='x', padx=20, pady=0,side=tk.LEFT)
 
 # Rent button
 rentButton = ttk.Button(master=frm_rentAndReturnBtns,text="Rent",command=rentVideo)
@@ -161,7 +156,7 @@ customerDetailButton = ttk.Button(master=frm_customerDetail,text="Customer Detai
 customerDetailButton.pack(fill='x', padx=5, pady=5, side=tk.LEFT)
 
 # Customer detail scrollable text box
-text_customerDetail = tkscrolled.ScrolledText(master=frm_customerDetail, width=30, height=10, wrap='word')
+text_customerDetail = tkscrolled.ScrolledText(master=frm_customerDetail, width=35, height=10, wrap='word')
 text_customerDetail.pack(fill='x', padx=20, pady=5,side=tk.LEFT)
 
 # movie detail button
@@ -169,14 +164,7 @@ videoDetailButton = ttk.Button(master=frm_videoDetail,text="Movie Detail",comman
 videoDetailButton.pack(fill='x', padx=5, pady=5, side=tk.LEFT)
 
 # Customer detail scrollable text box
-text_videoDetail = tk.Text(master=frm_videoDetail, width=30, height=5)
+text_videoDetail = tk.Text(master=frm_videoDetail, width=35, height=5)
 text_videoDetail.pack(fill='x', padx=20, pady=5,side=tk.LEFT)
-
-
-
-
-
-
-
 
 root.mainloop()

@@ -21,8 +21,7 @@ class VideoStoreController:
     #rent a video, returns a boolean status
     def rentVideo(self, aCustName, aVideoTitle):
         foundCustomer = self.findCustomer(aCustName)
-        foundVideo = self.findVideo(aVideoTitle)
-        print(foundVideo.Status)
+        foundVideo = self.findVideo(aVideoTitle)      
         if foundVideo.Status:
             foundVideo.Status = False
             foundCustomer.addRental(foundVideo)
@@ -31,7 +30,7 @@ class VideoStoreController:
         else:
             return False
     
-    #return a video
+    #return a video by customer
     def returnVideo(self, aCustName, aVideoTitle):
         foundCustomer = self.findCustomer(aCustName)
         for video in foundCustomer.VideoList:
